@@ -49,7 +49,8 @@ def get_input(df, target, standardize=True):
     return X, y
 
 # print performance
-def printPerformance(y_true, y_predict):
+def printPerformance(predict_item, set_type, y_true, y_predict):
+    print('Performance of predicting: {} on {} set:'.format(predict_item, set_type))
     tn, fp, fn, tp = confusion_matrix(y_true, y_predict).ravel()
     print('TN: {} | FP: {}'.format(tn, fp))
     print('FN: {} | TP: {}'.format(fn, tp))
@@ -117,8 +118,8 @@ X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test_win = lr_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_win)
+printPerformance('HorseWin', 'Train', y_train, y_predict_train)
+printPerformance('HorseWin', 'Test', y_test, y_predict_test_win)
 # HorseRankTop3
 start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop3')
@@ -128,8 +129,8 @@ X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test_top3 = lr_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_top3)
+printPerformance('HorseRankTop3', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop3', 'Test', y_test, y_predict_test_top3)
 # HorseRankTop50Percent
 start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop50Percent')
@@ -139,8 +140,8 @@ X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test_half = lr_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_half)
+printPerformance('HorseRankTop50Percent', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop50Percent', 'Test', y_test, y_predict_test_half)
 exportCsv('lr', df_predict, y_predict_test_win, y_predict_test_top3, y_predict_test_half)
 
 # Naïve Bayes
@@ -157,8 +158,8 @@ X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test_win = gnb_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_win)
+printPerformance('HorseWin', 'Train', y_train, y_predict_train)
+printPerformance('HorseWin', 'Test', y_test, y_predict_test_win)
 # HorseRankTop3
 start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop3')
@@ -168,8 +169,8 @@ X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test_top3 = gnb_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_top3)
+printPerformance('HorseRankTop3', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop3', 'Test', y_test, y_predict_test_top3)
 # HorseRankTop50Percent
 start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop50Percent')
@@ -179,8 +180,8 @@ X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test_half = gnb_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_half)
+printPerformance('HorseRankTop50Percent', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop50Percent', 'Test', y_test, y_predict_test_half)
 exportCsv('nb', df_predict, y_predict_test_win, y_predict_test_top3, y_predict_test_half)
 
 # SVM
@@ -215,8 +216,8 @@ X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test_win = svm_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_win)
+printPerformance('HorseWin', 'Train', y_train, y_predict_train)
+printPerformance('HorseWin', 'Test', y_test, y_predict_test_win)
 
 # HorseRankTop3
 '''
@@ -239,8 +240,8 @@ X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test_top3 = svm_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_top3)
+printPerformance('HorseRankTop3', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop3', 'Test', y_test, y_predict_test_top3)
 
 # HorseRankTop50Percent
 '''
@@ -264,8 +265,8 @@ X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test_half = svm_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_half)
+printPerformance('HorseRankTop50Percent', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop50Percent', 'Test', y_test, y_predict_test_half)
 exportCsv('svm', df_predict, y_predict_test_win, y_predict_test_top3, y_predict_test_half)
 
 # Random Forest
@@ -301,8 +302,8 @@ X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test_win = rf_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_win)
+printPerformance('HorseWin', 'Train', y_train, y_predict_train)
+printPerformance('HorseWin', 'Test', y_test, y_predict_test_win)
 # HorseRankTop3
 '''
 gridsearch get
@@ -327,8 +328,8 @@ X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test_top3 = rf_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_top3)
+printPerformance('HorseRankTop3', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop3', 'Test', y_test, y_predict_test_top3)
 # HorseRankTop50Percent
 '''
 gridsearch get
@@ -353,6 +354,6 @@ X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test_half = rf_model.predict(X_test)
 end_time = time.time()
 printTimeSpent(start_time, end_time)
-printPerformance(y_train, y_predict_train)
-printPerformance(y_test, y_predict_test_half)
+printPerformance('HorseRankTop50Percent', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop50Percent', 'Test', y_test, y_predict_test_half)
 exportCsv('rf', df_predict, y_predict_test_win, y_predict_test_top3, y_predict_test_half)
