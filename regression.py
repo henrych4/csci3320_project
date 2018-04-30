@@ -1,4 +1,4 @@
-# Building regression model to train and predict finish_time based on 
+# Building regression model to train and predict finish_time based on
 # Support Vector Regression Model and Gradient Boosting Regression Tree Model.
 # Features: ’actual_weight’, ’declared_horse_weight’, ’draw’, ’win_odds’,
 # ’jockey_ave_rank’, ’trainer_ave_rank’, ’recent_ave_rank’, ’race_distance’.
@@ -53,7 +53,7 @@ def get_input(df, target, standardize=False):
         y = df[target].map(from_str_to_float)
     return X, y
 
-# changing the finishing time from m.s.ms string to float 
+# changing the finishing time from m.s.ms string to float
 def from_str_to_float(t):
     (m, s, ms) = t.split('.')
     return int(m) * 60 + int(s) + int(ms) * 0.001
@@ -69,7 +69,7 @@ def top_1(method):
         df_test['top_1_pred'] = gbrt_pred_y
     top_1_correct = 0
     # for each race, check if the index of the dataframe with minimum top_1_pred equals the index of the dataframe with minimum finish_time
-    for race in df_test['race_id'].unique(): 
+    for race in df_test['race_id'].unique():
         flag=False
         df_race = df_test.loc[df_test['race_id']==race]
         for true_min in np.nditer(df_race['finish_time'].map(from_str_to_float).idxmin()):
@@ -89,7 +89,7 @@ def top_3(method):
         print("Top_3 of GBRT")
         df_test['top_1_pred'] = gbrt_pred_y
     top_3_correct = 0
-    for race in df_test['race_id'].unique(): 
+    for race in df_test['race_id'].unique():
         flag=False
         df_race = df_test.loc[df_test['race_id']==race]
         for true_3rd_min in np.nditer(df_race['finish_time'].map(from_str_to_float).nsmallest(3).index.values):
@@ -111,7 +111,7 @@ def average_rank(method):
     total_rank = 0
     amount_of_rank = 0
     # for each race, check if the index of the dataframe with minimum top_1_pred equals the index of the dataframe with minimum finish_time
-    for race in df_test['race_id'].unique(): 
+    for race in df_test['race_id'].unique():
         df_race = df_test.loc[df_test['race_id']==race]
         for min_pred in np.nditer((df_race['top_1_pred'].idxmin())):
             fin_pos = df_test.loc[df_test.index == min_pred]
@@ -119,7 +119,7 @@ def average_rank(method):
                 total_rank += rank
                 amount_of_rank += 1
     print(total_rank/amount_of_rank)
-    
+
 # Support Vector Regression Model(SVR)
 # kernel functions can be linear, poly, rbf and sigmoid.
 # precomputed is not suitable as according to stackoverflow, kernel='precomputed' can only be used when passing a (n_samples, n_samples) data matrix that represents pairwise similarities for the samples instead of the (n_samples, n_features) rectangular data matrix.
@@ -160,7 +160,7 @@ top_3("SVR")
 average_rank("SVR")
 
 # Gradient Boosting Regression Tree Model(GBRT)
-# loss functions could be one of ls, lad, huber, quantile, select one of them and state your reason in prjreport.pdf. 
+# loss functions could be one of ls, lad, huber, quantile, select one of them and state your reason in prjreport.pdf.
 # Second, learning_rate, n_estimators and max_depth are three critical parameters.
 
 # GBRT with standardized data
@@ -230,7 +230,7 @@ get GradientBoostingRegressor(alpha=0.9, criterion='friedman_mse', init=None,
              warmart=False)
 worse.
 
-# 2nd Gridsearch 
+# 2nd Gridsearch
 parameters = { 'C':[0.05, 0.025, 0.75], 'epsilon':[0.75,0.1,0.125]}
 clf = GridSearchCV(SVR(kernel='linear'), parameters, cv=5, refit="neg_mean_squared_error", n_jobs=4, scoring="neg_mean_squared_error" )
 clf.fit(svr_train_X, svr_train_y)

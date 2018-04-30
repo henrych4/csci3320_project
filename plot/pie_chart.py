@@ -17,6 +17,6 @@ for draw in range(1,15):
     win_count = len(df_draw[df_draw['finishing_position']==1])
     race_count = len(df_draw)
     fracs.append(win_count/race_count)
-    
+
 plt.pie(fracs, labels=labels, autopct='%1.1f%%')
 plt.show()
