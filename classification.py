@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import time
 from sklearn import preprocessing
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 from sklearn.ensemble import RandomForestClassifier
@@ -55,6 +55,11 @@ def printPerformance(y_true, y_predict):
     print('FN: {} | TP: {}'.format(fn, tp))
     print(classification_report(y_true, y_predict))
 
+def printTimeSpent(start_time, end_time):
+    minute, second = divmod(end_time - start_time, 60)
+    print('Time spent:{0}m {1}s'.format(int(minute), round(second, 4)))
+
+
 # calculate ground truth
 def getTrueLabel(df):
     horseWin = []
@@ -96,27 +101,36 @@ print("=====Logistic Regression=====")
 lr_model = LogisticRegressionCV(cv=10, class_weight='balanced', refit=False)
 
 # HorseWin
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseWin')
 lr_model.fit(X_train, y_train)
 y_predict_train = lr_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test = lr_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 # HorseRankTop3
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop3')
 lr_model.fit(X_train, y_train)
 y_predict_train = lr_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test = lr_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 # HorseRankTop50Percent
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop50Percent')
 lr_model.fit(X_train, y_train)
 y_predict_train = lr_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test = lr_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 
@@ -126,27 +140,36 @@ print("========Naïve Bayes========")
 gnb_model = GaussianNB()
 
 # HorseWin
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseWin')
 gnb_model.fit(X_train, y_train)
 y_predict_train = gnb_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test = gnb_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 # HorseRankTop3
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop3')
 gnb_model.fit(X_train, y_train)
 y_predict_train = gnb_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test = gnb_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 # HorseRankTop50Percent
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop50Percent')
 gnb_model.fit(X_train, y_train)
 y_predict_train = gnb_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test = gnb_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 
@@ -156,13 +179,13 @@ printPerformance(y_test, y_predict_test)
 # ref: https://stackoverflow.com/questions/36306555/scikit-learn-grid-search-with-svm-regression
 print("============SVM============")
 svm_model = SVC(class_weight='balanced')
-param_grid = { 
+param_grid = {
     'kernel':('linear', 'poly', 'rbf', 'sigmoid'),
 }
 CV_svm = GridSearchCV(estimator=svm_model, param_grid=param_grid, cv=5, n_jobs=4,scoring='precision')
 
 # HorseWin
-''' 
+'''
 gridsearch get
 SVC(C=1.0, cache_size=200, class_weight='balanced', coef0=0.0,
   decision_function_shape='ovr', degree=3, gamma='auto', kernel='poly',
@@ -170,6 +193,7 @@ SVC(C=1.0, cache_size=200, class_weight='balanced', coef0=0.0,
   tol=0.001, verbose=False)
 '''
 svm_model = SVC(kernel='poly',class_weight='balanced')
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseWin')
 svm_model.fit(X_train, y_train)
 '''
@@ -179,18 +203,21 @@ print(CV_svm.best_estimator_)
 y_predict_train = svm_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test = svm_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 
 # HorseRankTop3
 '''
-gridsearch get 
+gridsearch get
 SVC(C=1.0, cache_size=200, class_weight='balanced', coef0=0.0,
   decision_function_shape='ovr', degree=3, gamma='auto', kernel='rbf',
   max_iter=-1, probability=False, random_state=None, shrinking=True,
   tol=0.001, verbose=False)
 '''
 svm_model = SVC(kernel='rbf',class_weight='balanced')
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop3')
 svm_model.fit(X_train, y_train)
 '''
@@ -200,6 +227,8 @@ print(CV_svm.best_estimator_)
 y_predict_train = svm_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test = svm_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 
@@ -213,6 +242,7 @@ SVC(C=1.0, cache_size=200, class_weight='balanced', coef0=0.0,
 '''
 # original: rbf
 svm_model = SVC(kernel='rbf',class_weight='balanced')
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop50Percent')
 svm_model.fit(X_train, y_train)
 '''
@@ -222,13 +252,15 @@ print(CV_svm.best_estimator_)
 y_predict_train = svm_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test = svm_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 
 # Random Forest
 print("=======Random Forest=======")
 rf_model = RandomForestClassifier(class_weight='balanced')
-param_grid = { 
+param_grid = {
     'n_estimators': [50,100,150],
     'max_features': ['auto', 'log2']
 }
@@ -246,15 +278,18 @@ RandomForestClassifier(bootstrap=True, class_weight='balanced',
 worse
 '''
 rf_model = RandomForestClassifier(n_estimators=100,class_weight='balanced')
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseWin')
 rf_model.fit(X_train, y_train)
 '''
 CV_rfc.fit(X_train, y_train)
-print(CV_rfc.best_estimator_) 
+print(CV_rfc.best_estimator_)
 '''
 y_predict_train = rf_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseWin')
 y_predict_test = rf_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 # HorseRankTop3
@@ -269,15 +304,18 @@ RandomForestClassifier(bootstrap=True, class_weight='balanced',
             verbose=0, warm_start=False)
 '''
 rf_model = RandomForestClassifier(n_estimators=50,class_weight='balanced')
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop3')
 rf_model.fit(X_train, y_train)
 '''
 CV_rfc.fit(X_train, y_train)
-print(CV_rfc.best_estimator_) 
+print(CV_rfc.best_estimator_)
 '''
 y_predict_train = rf_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop3')
 y_predict_test = rf_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
 # HorseRankTop50Percent
@@ -292,14 +330,17 @@ RandomForestClassifier(bootstrap=True, class_weight='balanced',
             verbose=0, warm_start=False)
 '''
 rf_model = RandomForestClassifier(n_estimators=100,class_weight='balanced')
+start_time = time.time()
 X_train, y_train = get_input(df_train, 'HorseRankTop50Percent')
 rf_model.fit(X_train, y_train)
 '''
 CV_rfc.fit(X_train, y_train)
-print(CV_rfc.best_estimator_) 
+print(CV_rfc.best_estimator_)
 '''
 y_predict_train = rf_model.predict(X_train)
 X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
 y_predict_test = rf_model.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
 printPerformance(y_train, y_predict_train)
 printPerformance(y_test, y_predict_test)
