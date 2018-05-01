@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import time
+from naive_bayes import NaiveBayes
 from sklearn import preprocessing
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 from sklearn.ensemble import RandomForestClassifier
@@ -183,6 +184,43 @@ printTimeSpent(start_time, end_time)
 printPerformance('HorseRankTop50Percent', 'Train', y_train, y_predict_train)
 printPerformance('HorseRankTop50Percent', 'Test', y_test, y_predict_test_half)
 exportCsv('nb', df_predict, y_predict_test_win, y_predict_test_top3, y_predict_test_half)
+
+# Self implemented Naive Bayes
+print("========Naïve Bayes(Own)========")
+clf = NaiveBayes()
+# HorseWin
+start_time = time.time()
+X_train, y_train = get_input(df_train, 'HorseWin')
+clf.fit(X_train, y_train)
+y_predict_train = clf.predict(X_train)
+X_test, y_test = get_input(df_test, 'HorseWin')
+y_predict_test_win = clf.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
+printPerformance('HorseWin', 'Train', y_train, y_predict_train)
+printPerformance('HorseWin', 'Test', y_test, y_predict_test_win)
+# HorseRankTop3
+start_time = time.time()
+X_train, y_train = get_input(df_train, 'HorseRankTop3')
+clf.fit(X_train, y_train)
+y_predict_train = clf.predict(X_train)
+X_test, y_test = get_input(df_test, 'HorseRankTop3')
+y_predict_test_top3 = clf.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
+printPerformance('HorseRankTop3', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop3', 'Test', y_test, y_predict_test_top3)
+# HorseRankTop50Percent
+start_time = time.time()
+X_train, y_train = get_input(df_train, 'HorseRankTop50Percent')
+clf.fit(X_train, y_train)
+y_predict_train = clf.predict(X_train)
+X_test, y_test = get_input(df_test, 'HorseRankTop50Percent')
+y_predict_test_half = clf.predict(X_test)
+end_time = time.time()
+printTimeSpent(start_time, end_time)
+printPerformance('HorseRankTop50Percent', 'Train', y_train, y_predict_train)
+printPerformance('HorseRankTop50Percent', 'Test', y_test, y_predict_test_half)
 
 # SVM
 # kernel functions can be linear, poly, rbf and sigmoid.
