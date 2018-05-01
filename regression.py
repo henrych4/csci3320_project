@@ -5,12 +5,12 @@
 import numpy as np
 import pandas as pd
 from sklearn.svm import SVR
+from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from evolutionary_search import EvolutionaryAlgorithmSearchCV
 from sklearn.model_selection import KFold
 from math import sqrt
 import random
@@ -56,8 +56,7 @@ def get_input(df, target, standardize=False):
 # changing the finishing time from m.s.ms string to float
 def from_str_to_float(t):
     (m, s, ms) = t.split('.')
-    return int(m) * 60 + int(s) + int(ms) * 0.001
-
+    return int(m) * 60 + int(s) + int(ms) * 0.01
 
 # Top_1 is defined as the percentage/probability when the prediction of top_1 horse (horse with shortest finish_time) for each race is actually the true top_1 horse.
 def top_1(method):
@@ -78,7 +77,7 @@ def top_1(method):
                     flag = True
         if flag:
             top_1_correct += 1
-    print(top_1_correct/len(df_test['race_id'].unique()))
+    print(float(top_1_correct)/len(df_test['race_id'].unique()))
 
 # Top_3 is defined as the percentage/probability when the prediction of top_1 horse for each race is actually within true top_3 horses for each race
 def top_3(method):
@@ -109,7 +108,6 @@ def average_rank(method):
         print("Average_rank of GBRT")
         df_test['top_1_pred'] = gbrt_pred_y
     total_rank = 0
-    amount_of_rank = 0
     # for each race, check if the index of the dataframe with minimum top_1_pred equals the index of the dataframe with minimum finish_time
     for race in df_test['race_id'].unique():
         df_race = df_test.loc[df_test['race_id']==race]
@@ -117,8 +115,7 @@ def average_rank(method):
             fin_pos = df_test.loc[df_test.index == min_pred]
             for rank in fin_pos['finishing_position']:
                 total_rank += rank
-                amount_of_rank += 1
-    print(total_rank/amount_of_rank)
+    print(total_rank/len(df_test['race_id'].unique()))
 
 # Support Vector Regression Model(SVR)
 # kernel functions can be linear, poly, rbf and sigmoid.
@@ -128,8 +125,24 @@ def average_rank(method):
 # SVR with standardized data
 print("train SVR with standardized data")
 svr_train_X, svr_train_y = get_input(df_train, 'finish_time', True)
-svr_model = SVR(kernel='linear',C=0.1,epsilon=0.1)
+''' c = 0.175 epsilon=0.225 best'''
+svr_model = SVR(kernel='linear',C=0.2,epsilon=0.2)
 svr_model.fit(svr_train_X,svr_train_y)
+
+'''
+parameters = {'kernel':('linear', 'poly', 'rbf', 'sigmoid'), 'C':[0.1, 1, 10], 'epsilon':[0.01,0.1,0.5,1,2]}
+clf = GridSearchCV(SVR(), parameters, cv=5, refit="neg_mean_squared_error", n_jobs=4, scoring="neg_mean_squared_error" )
+clf.fit(svr_train_X, svr_train_y)
+print(clf.best_estimator_)
+clt_test_X, clt_test_y = get_input(df_test, 'finish_time', True)
+clt_pred_y = clf.best_estimator_.predict(clt_test_X)
+print(mean_squared_error(clt_test_y, clt_pred_y))
+get: 
+SVR(C=0.1, cache_size=200, coef0=0.0, degree=3, epsilon=0.1, gamma='auto',
+  kernel='linear', max_iter=-1, shrinking=True, tol=0.001, verbose=False)
+0.007172954647468784
+'''
+
 # RMSE with normalization of SVR
 print("RMSE with normalization of SVR:")
 svr_test_X, svr_test_y = get_input(df_test, 'finish_time', True)
@@ -142,10 +155,11 @@ top_3("SVR")
 # Average_Rank of SVR
 average_rank("SVR")
 
+'''
 # SVR with non-standardized data
 print("train SVR with non-standardized data")
 svr_train_X, svr_train_y = get_input(df_train, 'finish_time', False)
-svr_model = SVR(kernel='linear',C=0.1,epsilon=0.1)
+svr_model = SVR(kernel='linear',C=0.2,epsilon=0.2)
 svr_model.fit(svr_train_X,svr_train_y)
 # RMSE without normalization of SVR
 print("RMSE without normalization of SVR:")
@@ -158,6 +172,7 @@ top_1("SVR")
 top_3("SVR")
 # Average_Rank of SVR
 average_rank("SVR")
+'''
 
 # Gradient Boosting Regression Tree Model(GBRT)
 # loss functions could be one of ls, lad, huber, quantile, select one of them and state your reason in prjreport.pdf.
@@ -166,9 +181,32 @@ average_rank("SVR")
 # GBRT with standardized data
 print("train GBRT with standardized data")
 gbr_train_X, gbr_train_y = get_input(df_train, 'finish_time', True)
-params = {'n_estimators': 100, 'max_depth': 2, 'learning_rate': 0.5, 'loss': 'ls'}
+'''lr:0.1, ne:300, md:2'''
+params = {'n_estimators': 300, 'max_depth': 2, 'learning_rate': 0.25, 'loss': 'quantile'}
 gbrt_model = GradientBoostingRegressor(**params)
 gbrt_model.fit(gbr_train_X, gbr_train_y)
+
+'''
+parameters = {'loss':('ls', 'lad', 'huber', 'quantile'), 'max_depth':[1,2], 'learning_rate':[0.25,0.1,0.5],'n_estimators':[200,300]}
+clf = GridSearchCV(GradientBoostingRegressor(), parameters, cv=5, refit="neg_mean_squared_error", n_jobs=4, scoring="neg_mean_squared_error" )
+clf.fit(svr_train_X, svr_train_y)
+print(clf.best_estimator_)
+clt_test_X, clt_test_y = get_input(df_test, 'finish_time', True)
+clt_pred_y = clf.best_estimator_.predict(clt_test_X)
+print(mean_squared_error(clt_test_y, clt_pred_y))
+
+get 
+GradientBoostingRegressor(alpha=0.9, criterion='friedman_mse', init=None,
+             learning_rate=0.25, loss='huber', max_depth=2,
+             max_features=None, max_leaf_nodes=None,
+             min_impurity_decrease=0.0, min_impurity_split=None,
+             min_samples_leaf=1, min_samples_split=2,
+             min_weight_fraction_leaf=0.0, n_estimators=300,
+             presort='auto', random_state=None, subsample=1.0, verbose=0,
+             warm_start=False)
+'''
+
+
 # RMSE with normalization of GBRT
 print("RMSE with normalization of GBRT:")
 gbrt_test_X, gbrt_test_y = get_input(df_test, 'finish_time', True)
@@ -184,7 +222,7 @@ average_rank("GBRT")
 # GBRT with non-standardized data
 print("train GBRT with non-standardized data")
 gbr_train_X, gbr_train_y = get_input(df_train, 'finish_time', False)
-params = {'n_estimators': 100, 'max_depth': 2, 'learning_rate': 0.5, 'loss': 'ls'}
+params = {'n_estimators': 300, 'max_depth': 2, 'learning_rate': 0.25, 'loss': 'quantile'}
 gbrt_model = GradientBoostingRegressor(**params)
 gbrt_model.fit(gbr_train_X, gbr_train_y)
 # RMSE without normalization of GBRT
@@ -198,6 +236,8 @@ top_1("GBRT")
 top_3("GBRT")
 # Average_Rank of GBRT
 average_rank("GBRT")
+
+
 '''
 # Gridsearch
 
