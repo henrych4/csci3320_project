@@ -24,7 +24,7 @@ for horse in df_train['horse_id'].unique():
 ax.scatter(horse_win_rate_list, horse_win_num_list, s=10, marker='x')
 
 for i, name in enumerate(horse_list):
-    if horse_win_num_list[i] > 6 and horse_win_rate_list[i] > 0.54:
+    if horse_win_num_list[i] > 6 and horse_win_rate_list[i] > 0.55:
         ax.annotate(name, xy=(horse_win_rate_list[i], horse_win_num_list[i]))
 
 jockey_list = []
